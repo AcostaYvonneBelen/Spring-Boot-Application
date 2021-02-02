@@ -1,4 +1,4 @@
-package com.yvonne.aplication.entity;
+package com.example.demo.entity;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -13,8 +13,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 import org.hibernate.annotations.GenericGenerator;
-
-import com.example.demo.Role;
 
 import javax.persistence.JoinColumn;
 
