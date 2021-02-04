@@ -9,5 +9,7 @@ public interface UserService {
 
 	public Iterable<User> getAllUsers();
 	public User createUser(User formUser) throws Exception;
+	User getUserById(Long id) throws Exception;
+	public User updateUser(User user) throws Exception;
 		
 }
