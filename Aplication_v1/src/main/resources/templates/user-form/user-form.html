@@ -62,5 +62,5 @@
 			<input type="submit" class="btn btn-primary" value="Save Changes" th:value="${editMode}?'Save User':'Create User'">
 		</div>
 	</div>
-	<div class="alert-danger text-center" th:if="${formError}" th:text= "${formError}">Error message</div>
+	<div class="alert-danger text-center" th:if="${formErrorMessage}" th:text= "${formErrorMessage}">Error message</div>
 </form>

@@ -68,4 +68,9 @@ public class UserServiceImpl implements UserService{
 		to.setEmail(from.getEmail());
 		to.setRoles(from.getRoles());
 	}
+	
+	public void deleteUser(Long id) throws Exception {
+		User user = getUserById(id);
+		repository.delete(user);
+	}
 }
