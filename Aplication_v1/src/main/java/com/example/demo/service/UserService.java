@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.ChangePasswordForm;
 import com.example.demo.entity.User;
 
 @Service
@@ -12,5 +13,6 @@ public interface UserService {
 	User getUserById(Long id) throws Exception;
 	public User updateUser(User user) throws Exception;
 	public void deleteUser(Long id) throws Exception;
+	public User changePassword(ChangePasswordForm form) throws Exception;
 		
 }
