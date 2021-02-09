@@ -40,7 +40,7 @@ public class UserController {
 		return "user-form/user-view";
 	}	
 	
-	@GetMapping("/")
+	@GetMapping({"/","/login"})
 	public String index() {
 		return "index";
 	}

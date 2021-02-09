@@ -3,6 +3,10 @@ package com.example.demo.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.ChangePasswordForm;
@@ -14,6 +18,9 @@ public class UserServiceImpl implements UserService{
 
 	@Autowired
 	UserRepository repository;
+	
+	@Autowired
+	BCryptPasswordEncoder bCryptPasswordEncoder;
 	
 	@Override
 	public Iterable<User> getAllUsers() {
@@ -39,6 +46,9 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public User createUser(User user) throws Exception {
 		if (checkUsernameAvailable(user) && checkPasswordValid(user)) {
+			String encodePassword = bCryptPasswordEncoder.encode(user.getPassword());
+			user.setPassword(encodePassword);
+			
 			user = repository.save(user);
 		}
 		return user;
@@ -69,7 +79,8 @@ public class UserServiceImpl implements UserService{
 		to.setEmail(from.getEmail());
 		to.setRoles(from.getRoles());
 	}
-	
+	@Override
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	public void deleteUser(Long id) throws Exception {
 		User user = getUserById(id);
 		repository.delete(user);
@@ -81,7 +92,7 @@ public class UserServiceImpl implements UserService{
 				.findById( form.getId() )
 				.orElseThrow(() -> new Exception("UsernotFound in ChangePassword -"+this.getClass().getName()));
 		
-		if( form.getCurrentPassword().equals(storedUser.getPassword())) {
+		if(!isLoggedUserADMIN() && form.getCurrentPassword().equals(storedUser.getPassword())) {
 			throw new Exception("Current Password Incorrect.");
 		}
 		
@@ -93,10 +104,28 @@ public class UserServiceImpl implements UserService{
 			throw new Exception("New Password and Confirm Password does not match!");
 		}
 		
-		storedUser.setPassword(form.getNewPassword());
+		String encodePassword = bCryptPasswordEncoder.encode(form.getNewPassword());
+		storedUser.setPassword(encodePassword);
 		return repository.save(storedUser);
 	}
 	
+	public boolean isLoggedUserADMIN(){
+		 return loggedUserHasRole("ROLE_ADMIN");
+		}
+	
+	public boolean loggedUserHasRole(String role) {
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails loggedUser = null;
+		Object roles = null; 
+		if (principal instanceof UserDetails) {
+			loggedUser = (UserDetails) principal;
+		
+			roles = loggedUser.getAuthorities().stream()
+					.filter(x -> role.equals(x.getAuthority() ))      
+					.findFirst().orElse(null); //loggedUser = null;
+		}
+		return roles != null ?true :false;
+	}
 	
 	
 }
